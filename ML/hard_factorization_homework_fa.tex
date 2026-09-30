@@ -1,0 +1,250 @@
+\documentclass[12pt,a4paper]{article}
+
+% ===== Encoding & Persian support =====
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{persian}
+\setotherlanguage{english}
+
+% Font: use a Persian-capable font if available, fall back gracefully
+\IfFontExistsTF{Vazirmatn}{\setmainfont[Ligatures=TeX]{Vazirmatn}}{%
+\IfFontExistsTF{Amiri}{\setmainfont[Ligatures=TeX]{Amiri}}{%
+\IfFontExistsTF{Scheherazade New}{\setmainfont[Ligatures=TeX]{Scheherazade New}}{}}}
+
+% ===== Math =====
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+% ===== Page layout =====
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{enumitem}
+\setlist{nosep, label={\arabic*.}, leftmargin=2.5em}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% ===== Title formatting =====
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{1.5ex plus 0.5ex minus 0.2ex}{1ex plus 0.3ex}
+
+% ===== Custom commands =====
+% Persian numeral formatting for enumerate
+\newcommand{\fa}[1]{\RL{#1}}
+
+% Line spacing
+\linespread{1.35}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries تمرین‌های تجزیه و ریشه‌های معادلات درجه دوم}\\[0.5em]
+{\large تکلیف هفتگی}
+\end{center}
+
+\vspace{1em}
+\hrule
+\vspace{1.5em}
+
+% ====================================================================
+% سوال ۱: تجزیه کنید
+% ====================================================================
+\section*{سوال ۱: عبارت‌های زیر را تجزیه کنید}
+
+\begin{enumerate}
+\item $x^3 + x^2 y - 4xy - 4y^2$
+\item $x^3 - 2x^2 y - 9x + 18y$
+\item $a^3 + a^2 b - ab^2 - b^3$
+\item $2x^3 - 3x^2 - 2x + 3$
+\item $x^3 y - x^2 y^2 - x^2 yz + xy^2 z$
+\item $ac + ad - bc - bd + ce + de$
+\item $x^4 - x^3 + x - 1$
+\item $a^5 + a^4 - a - 1$
+\item $(x^2 + 3x)^2 - 2(x^2 + 3x) - 8$
+\item $(x^2 - x)^2 - 14(x^2 - x) + 24$
+\item $(x^2 + x + 1)(x^2 + x + 2) - 12$
+\item $(x^2 + 2x)(x^2 + 2x - 2) - 3$
+\item $(x-1)(x-2)(x-3)(x-4) - 24$
+\item $(x+1)(x+2)(x+3)(x+4) - 35$
+\item $(x^2 + 5x + 4)(x^2 + 5x + 6) - 3$
+\item $x^4 - 10x^2 + 9$
+\item $x^4 + 4$
+\item $x^4 + x^2 + 1$
+\item $x^4 + 3x^2 + 4$
+\item $x^8 + x^4 + 1$
+\item $4x^4 + y^4$
+\item $x^4 - 7x^2 + 1$
+\item $x^4 + x^2 y^2 + y^4$
+\item $a^4 + 4b^4$
+\item $x^4 + 64$
+\item $(x^2 + 4x + 3)(x^2 + 4x + 5) + 1$
+\item $a^4 + b^4 + c^4 - 2a^2 b^2 - 2a^2 c^2 - 2b^2 c^2$
+\item $x^3 + 8y^3$
+\item $27a^3 - 1$
+\item $8x^3 + 27y^3$
+\item $x^3 - (x-1)^3$
+\item $a^3 + b^3 + c^3 \quad \text{به‌شرط } a + b + c = 0$
+\item $x^3 + y^3 + z^3 - 3xyz$
+\item $8a^3 + b^3 + 27c^3 - 18abc$
+\item $a^6 - b^6$
+\item $x^9 + y^9$
+\item $x^{12} - y^{12}$
+
+\setcounter{enumi}{42}
+\item $x^4 + 4$
+\item $x^4 - 7x^2 + 1$
+\item $x^4 + x^2 + 1$
+\item $9x^4 + 8x^2 + 4$
+\item $x^4 + 3x^2 y^2 + 4y^4$
+\item $a^4 + b^4 + (a+b)^2 ab$
+
+\setcounter{enumi}{48}
+\item $x^2 - y^2 + x - y$
+\item $a^2 - b^2 + 2bc - c^2$
+\item $x^2 + y^2 - z^2 + 2xy$
+\item $a^2 + 2ab + b^2 - c^2 + 2cd - d^2$
+\item $x^2 - 2xy + y^2 - 4z^2$
+\item $a^2 + b^2 + c^2 + 2ab + 2bc + 2ca$
+\item $a^2 + b^2 - c^2 - d^2 + 2ab + 2cd$
+\item $x^2 - y^2 - 6x + 9$
+
+\setcounter{enumi}{56}
+\item $x^3 - 6x^2 + 11x - 6$
+\item $x^3 - 2x^2 - 5x + 6$
+\item $2x^3 + x^2 - 5x + 2$
+\item $x^3 + 6x^2 + 11x + 6$
+\item $x^4 - 5x^3 + 5x^2 + 5x - 6$
+\item $x^4 + x^3 - 3x^2 - x + 2$
+\item $2x^4 + 7x^3 - x^2 - 15x - 9$
+\item $x^4 - 2x^3 - 8x^2 + 18x - 9$
+
+\setcounter{enumi}{71}
+\item $x^5 + x + 1$
+\item $x^5 - x^4 + x^3 - x^2 + x - 1$
+\item $x^8 + x^7 + x^6 + x^5 + x^4 + x^3 + x^2 + x + 1$
+\item $(x+1)^5 - x^5 - 1$
+\item $a^3(b-c) + b^3(c-a) + c^3(a-b)$
+\item $a(b-c)^3 + b(c-a)^3 + c(a-b)^3$
+\item $x^3 + y^3 + z^3 \quad \text{به‌شرط } x + y + z = 0$
+\item $n^4 + 4^n \quad \text{(برای } n \text{ فرد)}$
+\end{enumerate}
+
+\vspace{1.5em}
+
+% ====================================================================
+% سوال ۲: حل معادلات
+% ====================================================================
+\section*{سوال ۲: معادلات زیر را حل کنید}
+
+\setcounter{enumi}{80}
+\begin{enumerate}
+\item $x^4 - 13x^2 + 36 = 0$
+\item $x^6 - 7x^3 - 8 = 0$
+\item $x^4 - 5x^2 + 4 = 0$
+\item $(x^2 - 3x)^2 - 4(x^2 - 3x) - 12 = 0$
+\item $(x^2 + x)^2 - 8(x^2 + x) + 12 = 0$
+\item $x^4 + 3x^2 - 4 = 0$
+\item $x^6 + 8x^3 + 7 = 0$
+\item $(x-2)(x-4)(x+3)(x+5) = 50$
+\item $x^4 - 10x^2 + 9 = 0$
+\item $x^8 - 17x^4 + 16 = 0$
+\end{enumerate}
+
+\vspace{1.5em}
+
+% ====================================================================
+% سوال ۳: به پرسش‌های زیر پاسخ دهید
+% ====================================================================
+\section*{سوال ۳: به پرسش‌های زیر پاسخ دهید}
+
+\setcounter{enumi}{90}
+\begin{enumerate}
+\item اگر $\alpha$ و $\beta$ ریشه‌های $x^2 - 7x + 10 = 0$ باشند، مقدار $\alpha^2 + \beta^2$ را بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $2x^2 + 5x - 3 = 0$ باشند، مقدار $\dfrac{1}{\alpha} + \dfrac{1}{\beta}$ را بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $x^2 + 3x - 5 = 0$ باشند، مقدار $\alpha^3 + \beta^3$ را بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $x^2 - 6x + 4 = 0$ باشند، مقدار $(\alpha - \beta)^2$ را بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $3x^2 - 2x - 7 = 0$ باشند، مقدار $\alpha^2 \beta + \alpha \beta^2$ را بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $x^2 + px + q = 0$ باشند، $\alpha^5 + \beta^5$ را بر حسب $p$ و $q$ بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $x^2 + 7x + 1 = 0$ باشند، مقدار $\dfrac{\alpha}{\beta} + \dfrac{\beta}{\alpha}$ را بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $x^2 - x - 1 = 0$ باشند، مقدار $\alpha^3 + \beta^3$ را بیابید و نشان دهید برابر $2\alpha + 2\beta + 3$ است.
+\item معادله‌ای با ضرایب صحیح بیابید که $3 + \sqrt{7}$ یکی از ریشه‌های آن باشد.
+\item معادله‌ای با ضرایب صحیح بیابید که $\sqrt{5} - \sqrt{3}$ یکی از ریشه‌های آن باشد.
+\item ریشه‌های $x^2 - 3x + k = 0$ برابر $\alpha$ و $\beta$ هستند. $k$ را طوری بیابید که $\alpha - \beta = 5$.
+\item ریشه‌های $x^2 + px + 12 = 0$ اختلافشان ۱ است. همه مقادیر ممکن $p$ را بیابید.
+\item $k$ را طوری بیابید که یکی از ریشه‌های $x^2 + (k+1)x + 2k = 0$ دو برابر ریشه دیگر باشد.
+\item $m$ را طوری بیابید که ریشه‌های $x^2 - mx + m + 7 = 0$ برابر باشند.
+\item معادله‌ای بیابید که ریشه‌های آن $\alpha + 1$ و $\beta + 1$ باشند، جایی که $\alpha, \beta$ ریشه‌های $x^2 - 4x + 2 = 0$ هستند.
+\item معادله‌ای بیابید که ریشه‌های آن $\alpha^2 + \dfrac{1}{\beta^2}$ و $\beta^2 + \dfrac{1}{\alpha^2}$ باشند، جایی که $\alpha, \beta$ ریشه‌های $x^2 - 3x + 1 = 0$ هستند.
+\item برای چه مقادیر $k$، معادله $x^2 + kx + 9 = 0$ ریشه‌های برابر دارد؟
+\item برای چه مقادیر $k$، معادله $2x^2 + 3x + k = 0$ دو ریشه حقیقی متمایز دارد؟
+\item برای چه مقادیر $m$، معادله $x^2 + (m+2)x + m + 5 = 0$ ریشه حقیقی ندارد؟
+\item برای چه مقادیر $p$، معادله $(p+1)x^2 - 2(p-1)x + p - 2 = 0$ ریشه‌های برابر دارد؟
+\item برای چه مقادیر حقیقی $k$، معادله $x^2 + (k+1)x + k^2 = 0$ حداقل یک ریشه حقیقی دارد؟
+\item نشان دهید که $x^2 + 2ax + (a^2 + a + 1) = 0$ برای هر $a > -1$ ریشه حقیقی ندارد.
+\item اگر $x^2 + px + q = 0$ و $x^2 + qx + p = 0$ ریشه مشترک داشته باشند، نشان دهید که $p + q + 1 = 0$ یا $p = q$.
+\item اگر $x^2 + ax + b = 0$ و $x^2 + bx + a = 0$ ریشه مشترک داشته باشند، ریشه مشترک را بر حسب $a$ و $b$ بیان کنید.
+\item همه مقادیر $k$ را بیابید که $x^2 - kx + 12 = 0$ و $x^2 + kx + 12 = 0$ ریشه مشترک دارند.
+\item برای چه مقادیر $m$، هر دو ریشه $x^2 - 2mx + m^2 - 1 = 0$ بین $-2$ و $4$ قرار دارند؟
+\item برای چه مقادیر $m$، معادله $x^2 + 2mx + m^2 - 4 = 0$ دارد:
+  \begin{enumerate}[label=(\alph*)]
+    \item هر دو ریشه مثبت
+    \item هر دو ریشه منفی
+    \item ریشه‌های علامت مخالف
+  \end{enumerate}
+\item $k$ را طوری بیابید که $x^2 - 2kx + k^2 - 5 = 0$ داشته باشد:
+  \begin{enumerate}[label=(\alph*)]
+    \item هر دو ریشه بزرگتر از ۱
+    \item هر دو ریشه کوچکتر از ۳
+    \item عدد ۲ بین ریشه‌ها قرار گیرد
+  \end{enumerate}
+\item برای چه مقادیر $a$، معادله $x^2 - 2ax + a^2 - 9 = 0$ دقیقاً یک ریشه در بازه $(0, 5)$ دارد؟
+\item برای چه مقادیر $m$، هر دو ریشه $x^2 + mx + 4 = 0$ حقیقی و در بازه $(-1, 3)$ هستند؟
+\item برای چه مقادیر $k$، معادله $x^2 + kx + 3 = 0$ یک ریشه در $(0, 1)$ و ریشه دیگر در $(2, 3)$ دارد؟
+\item $k$ را طوری بیابید که مجموع ریشه‌های $x^2 + (2k-1)x + k^2 - 3 = 0$ برابر حاصل‌ضرب ریشه‌ها باشد.
+\item $p$ را طوری بیابید که یکی از ریشه‌های $x^2 + px + 12 = 0$ مربع ریشه دیگر باشد.
+\item $k$ را طوری بیابید که ریشه‌های $x^2 + (3k-1)x + 2k^2 + 2k - 4 = 0$ اختلافشان ۲ باشد.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + mx + m^2 - 7 = 0$ باشند، $m$ را طوری بیابید که $\alpha^2 + \beta^2 = 5$.
+\item همه $k$‌های حقیقی را بیابید که ریشه‌های $\alpha, \beta$ معادله $x^2 - 2kx + k^2 - 4 = 0$ شرط $|\alpha| + |\beta| = 6$ را برآورده کنند.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + px + q = 0$ باشند، معادله‌ای بیابید که ریشه‌های آن $\dfrac{\alpha}{\alpha+1}$ و $\dfrac{\beta}{\beta+1}$ باشند.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + 5x + 3 = 0$ باشند، معادله‌ای بیابید که ریشه‌های آن $(\alpha+\beta)^2$ و $(\alpha-\beta)^2$ باشند.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 - x - 4 = 0$ باشند، معادله‌ای بیابید که ریشه‌های آن $\dfrac{1}{\alpha+\beta}$ و $\dfrac{1}{\alpha\beta}$ باشند.
+\item اگر $\alpha, \beta$ ریشه‌های $2x^2 + 3x + 5 = 0$ باشند، معادله‌ای بیابید که ریشه‌های آن $\alpha + \dfrac{1}{\beta}$ و $\beta + \dfrac{1}{\alpha}$ باشند.
+\end{enumerate}
+
+\vspace{1.5em}
+
+% ====================================================================
+% سوالات چالشی
+% ====================================================================
+\section*{سوالات چالشی (اختیاری)}
+
+\setcounter{enumi}{130}
+\begin{enumerate}
+\item فرض کنید $\alpha, \beta$ ریشه‌های $x^2 + x + 1 = 0$ باشند. مقدار $\alpha^{2025} + \beta^{2025}$ را بیابید.
+\item فرض کنید $\alpha, \beta$ ریشه‌های $x^2 - 2017x + 1 = 0$ باشند. مقدار $\alpha^{2017} + \beta^{2017}$ را بر پیمانه ۱۰ بیابید.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + x - 1 = 0$ باشند، مقدار $\alpha^5 + \beta^5$ را بیابید.
+\item فرض کنید $\alpha, \beta, \gamma$ ریشه‌های $x^3 - 3x^2 + 4x - 2 = 0$ باشند. $\alpha^2 + \beta^2 + \gamma^2$، $\alpha\beta + \beta\gamma + \gamma\alpha$ و $\alpha\beta\gamma$ را بیابید.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + x + 1 = 0$ باشند، $\alpha^{100} + \beta^{100}$ و $\alpha \cdot \beta^{100} + \beta \cdot \alpha^{100}$ را محاسبه کنید.
+\item با دانستن اینکه $\alpha$ و $\beta$ ریشه‌های $x^2 + 7x + 2 = 0$ هستند، $\lfloor \alpha \rfloor + \lfloor \beta \rfloor$ را بیابید ($\lfloor \cdot \rfloor$ تابع کف است).
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 - 6x + 4 = 0$ باشند، مقدار $\sqrt{\alpha} + \sqrt{\beta}$ را بیابید.
+\item فرض کنید $r_1, r_2$ ریشه‌های $x^2 + 2024x + 2025 = 0$ باشند. $(r_1 + 1)(r_2 + 1)$ را محاسبه کنید.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + x + 2 = 0$ باشند، $\alpha^8 + \beta^8$ را بیابید.
+\item فرض کنید $\alpha$ ریشه $x^2 - x - 1 = 0$ باشد. $\alpha^4 - 3\alpha^2$ را بدون محاسبه صریح $\alpha$ بیابید.
+\item فرض کنید $\alpha, \beta$ ریشه‌های $x^2 + 3x + 9 = 0$ باشند. $\alpha^3 + \beta^3$ و $\alpha^6 + \beta^6$ را بیابید.
+\item اگر $\alpha$ و $\beta$ ریشه‌های $x^2 - x + 1 = 0$ باشند، $\alpha^{2026} + \beta^{2026}$ را بیابید.
+\item اگر $r$ ریشه $x^3 - 2x^2 + x - 3 = 0$ باشد، مقدار $r^4 - 2r^3 + r^2$ را بیابید.
+\item معادله $x^2 + bx + c = 0$ ریشه‌های $\alpha$ و $\beta$ دارد. معادله $x^2 + (\alpha + \beta)x + \alpha\beta = 0$ ریشه‌های $\gamma$ و $\delta$ دارد. $\gamma + \delta$ و $\gamma\delta$ را بر حسب $b$ و $c$ بیان کنید.
+\item فرض کنید $\alpha, \beta$ ریشه‌های $x^2 + mx + n = 0$ باشند. اگر $\alpha^2 + \beta^2 = 6$ و $\alpha^3 + \beta^3 = 14$، $m$ و $n$ را بیابید.
+\item فرض کنید $p, q$ ریشه‌های $x^2 + x + 1 = 0$ باشند. $p^3 + q^3$ و $p^6 + q^6$ را محاسبه کنید. توضیح دهید چرا دومی برابر ۲ است.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + 2ax + b = 0$ و $\gamma, \delta$ ریشه‌های $x^2 + 2ax + c = 0$ باشند (با $a^2 > b > c$)، شرط روی $a, b, c$ را بیابید تا چهار ریشه به ترتیب مرتب شده تشکیل دنباله حسابی بدهند.
+\item اگر $\alpha, \beta$ ریشه‌های $x^2 + bx + c = 0$ و $\beta, \gamma$ ریشه‌های $x^2 + cx + b = 0$ با $\alpha \neq \beta$ باشند، $\alpha + \gamma$ را بر حسب $b$ و $c$ بیابید.
+\item با دانستن اینکه $\alpha, \beta$ ریشه‌های $x^2 + x + 1 = 0$ هستند، معادله‌ای بیابید که ریشه‌های آن $\alpha^{2024}$ و $\beta^{2024}$ باشند.
+\item فرض کنید $\alpha, \beta$ ریشه‌های $x^2 + (k^2 - 4)x + k = 0$ باشند. برای چه مقادیر $k$ ریشه‌ها مختلط (غیرحقیقی) هستند؟
+\item معادله $x^2 + bx + c = 0$ ریشه‌های $\alpha, \beta$ دارد. با دانستن $|\alpha| + |\beta| = 5$ و $\alpha\beta = -6$، $b$ را بیابید.
+\item فرض کنید $\alpha, \beta$ ریشه‌های $x^2 + x - 3 = 0$ باشند. $\alpha^7 + \beta^7$ را محاسبه کنید.
+\end{enumerate}
+
+\end{document}

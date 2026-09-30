@@ -1,0 +1,895 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{mdframed}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Review Session: Weeks 1--4 Exam Preparation}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\boxedeq}[1]{\begin{center}\fbox{$\displaystyle #1$}\end{center}}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Review Session: Weeks 1--4 Exam Preparation}\\[4pt]
+{\large Machine Learning for IOAI Preparation}\\[4pt]
+Session Duration: 2 hours (120 minutes)\\[2pt]
+Comprehensive review of all content from Weeks 1--4
+\end{center}
+
+\rule{\textwidth}{0.5pt}
+
+\tableofcontents
+
+\bigskip
+
+\section{Session Overview}
+
+This review session consolidates four weeks of material into a single coherent narrative. The session is structured around the \textbf{three perspectives} introduced in Week~1 --- geometry, probability (preview), and optimization --- and the \textbf{central thread} that connects all four weeks: the overfitting-underfitting tradeoff.
+
+\subsection{Timing Plan}
+
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{Time} & \textbf{Section} & \textbf{Content} \\
+\hline
+0:00--0:10 & Opening & Exam structure, topic map, study strategy \\
+\hline
+0:10--0:30 & Block 1 & Week 1: ML framework, ERM, hypothesis space, loss functions \\
+\hline
+0:30--0:55 & Block 2 & Week 2: Scalar linear regression, OLS derivation, ridge, $R^2$ \\
+\hline
+0:55--1:15 & Block 3 & Week 3: Polynomial regression, generalization gap, L1/L2 geometry \\
+\hline
+1:15--1:20 & Break & 5-minute break \\
+\hline
+1:20--1:50 & Block 4 & Week 4: Train/val/test, CV, classification metrics, ROC/AUC \\
+\hline
+1:50--2:05 & Block 5 & Exam strategy, common mistakes, practice questions \\
+\hline
+2:05--2:15 & Q\&A & Open questions \\
+\hline
+\end{tabular}
+\end{center}
+
+% ============================================================
+\section{Block 0: Opening (10 min)}
+% ============================================================
+
+\subsection{Exam Structure}
+
+The exam has:
+\begin{itemize}
+    \item \textbf{3 long-answer, multi-part questions} (20 marks each, 60 min total)
+    \item \textbf{5 short-answer questions} (6 marks each, 30 min total)
+    \item Topics span all four weeks, with many questions crossing week boundaries
+\end{itemize}
+
+\subsection{Topic Dependency Chain}
+
+\begin{center}
+\begin{tabular}{ll}
+Week 1: Framework & What is learning? Hypothesis space, loss, ERM, true vs.\ empirical risk \\
+$\downarrow$ & \\
+Week 2: Linear Regression & OLS derivation (algebra), MSE, ridge, $R^2$, residuals, centroid \\
+$\downarrow$ & \\
+Week 3: Overfitting Deep & Polynomial regression, generalization gap, L1/L2 geometry, complexity dial \\
+$\downarrow$ & \\
+Week 4: Evaluation & Train/val/test, $k$-fold CV, confusion matrix, precision/recall/F1, ROC/AUC \\
+\end{tabular}
+\end{center}
+
+\textbf{The unifying thread:} Every week revolves around the same idea --- \emph{we minimize training loss, but we care about test loss; the gap is generalization; and we control it through model complexity and proper evaluation.}
+
+\subsection{Study Strategy}
+
+\begin{enumerate}
+    \item \textbf{Master the derivations.} You must be able to derive $b^* = \bar{y} - w\bar{x}$ and $w^* = \text{Cov}(x,y)/\text{Var}(x)$ from scratch using completing the square.
+    \item \textbf{Memorize the diagnostic tables.} The overfitting/underfitting diagnostic table and the bias-variance table are exam-critical.
+    \item \textbf{Understand the geometry.} L1 diamond vs.\ L2 circle --- be able to draw and explain sparsity.
+    \item \textbf{Practice metric computation.} Confusion matrix $\to$ accuracy, precision, recall, F1 --- this appears on every exam.
+\end{enumerate}
+
+% ============================================================
+\section{Block 1: Week 1 --- The ML Framework (20 min)}
+% ============================================================
+
+\subsection{What Is Machine Learning?}
+
+\textbf{Mitchell's definition:} A computer program learns from experience $E$ with respect to task $T$ and performance measure $P$ if its performance at $T$, as measured by $P$, improves with $E$.
+
+\textbf{Example (spam filter):} $T$ = classify emails, $E$ = labeled training emails, $P$ = accuracy.
+
+\subsection{The Mathematical Setup}
+
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Symbol} & \textbf{Meaning} \\
+\hline
+$\mathbf{x} \in \mathcal{X}$ & Input (feature vector) \\
+$y \in \mathcal{Y}$ & Output (target) \\
+$\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^n$ & Dataset ($n$ examples) \\
+$f_\theta$ & Model parameterized by $\theta$ \\
+$\mathcal{H} = \{f_\theta : \theta \in \Theta\}$ & Hypothesis space \\
+$L(\hat{y}, y)$ & Loss function \\
+$R_{\text{emp}}(\theta)$ & Empirical risk (average training loss) \\
+$R(\theta)$ & True risk (expected loss over true distribution) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Key Equations}
+
+\textbf{Empirical Risk:}
+$$R_{\text{emp}}(\theta) = \frac{1}{n}\sum_{i=1}^n L(f_\theta(\mathbf{x}_i), y_i)$$
+
+\textbf{ERM Principle:}
+$$\theta^* = \arg\min_{\theta \in \Theta} R_{\text{emp}}(\theta)$$
+
+\textbf{True Risk:}
+$$R(\theta) = \mathbb{E}_{(\mathbf{x},y) \sim \mathcal{P}}[L(f_\theta(\mathbf{x}), y)]$$
+
+\textbf{Why we can't minimize true risk:} We don't know $\mathcal{P}$ (the true data distribution). We only have a finite sample $\mathcal{D}$. The empirical risk is our best approximation.
+
+\subsection{Types of Learning}
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Type} & \textbf{Data} & \textbf{Goal} & \textbf{Example} \\
+\hline
+Supervised & $(\mathbf{x}_i, y_i)$ & Learn $f:\mathcal{X}\to\mathcal{Y}$ & Spam filter, house prices \\
+Unsupervised & $\mathbf{x}_i$ only & Find structure & Clustering, dim.\ reduction \\
+Reinforcement & $(s_t, a_t, r_t)$ & Learn policy $\pi(a|s)$ & Game playing, robotics \\
+\hline
+\end{tabular}
+\end{center}
+
+Supervised has two sub-types: \textbf{regression} ($\mathcal{Y} = \mathbb{R}$) and \textbf{classification} ($\mathcal{Y} = \{1, \ldots, K\}$).
+
+\subsection{Overfitting vs.\ Underfitting (Qualitative)}
+
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+ & \textbf{Underfitting} & \textbf{Good Fit} & \textbf{Overfitting} \\
+\hline
+Training error & High & Moderate & Low ($\approx 0$) \\
+Test error & High & Moderate & High \\
+Complexity & Too low & Just right & Too high \\
+Analogy & Didn't study & Understood concepts & Memorized answers \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Key insight:} Zero training error does NOT mean a good model. The gap between training and test error (the \textbf{generalization gap}) is what matters.
+
+\subsection{The Triality}
+
+Every ML problem has three perspectives:
+\begin{enumerate}
+    \item \textbf{Geometric:} Fitting a surface to data points
+    \item \textbf{Probabilistic:} Estimating a data distribution
+    \item \textbf{Optimization:} Minimizing an objective function
+\end{enumerate}
+
+\subsection{Common Loss Functions}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Loss} & \textbf{Formula} & \textbf{Use Case} \\
+\hline
+Squared error & $(\hat{y}-y)^2$ & Regression \\
+Absolute error & $|\hat{y}-y|$ & Regression (robust) \\
+0-1 loss & $\mathbb{1}[\hat{y} \neq y]$ & Classification \\
+Cross-entropy & $-y\log\hat{y} - (1-y)\log(1-\hat{y})$ & Classification (probabilistic) \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{tcolorbox}[colback=blue!5,colframe=blue!50,title=Mini-Exercise (2 min)]
+For a Netflix recommendation system that predicts user ratings (1--5 stars), identify $T$, $E$, $P$, and the type of learning.
+\end{tcolorbox}
+\noindent\textbf{Answer:} $T$ = predict ratings, $E$ = historical rating data, $P$ = MSE or accuracy, Type = supervised regression.
+
+% ============================================================
+\section{Block 2: Week 2 --- Scalar Linear Regression (25 min)}
+% ============================================================
+
+\subsection{The Model and Loss}
+
+\textbf{Model:} $\hat{y} = wx + b$ (slope $w$, intercept $b$)
+
+\textbf{MSE Loss:}
+$$R_{\text{emp}}(w, b) = \frac{1}{n}\sum_{i=1}^n (wx_i + b - y_i)^2$$
+
+\textbf{Why squared error?}
+\begin{itemize}
+    \item Geometric: measures Euclidean distance (vertical) between predictions and targets
+    \item Practical: differentiable everywhere, unique solution
+    \item Probabilistic (preview): corresponds to Gaussian noise assumption (Week 5)
+\end{itemize}
+
+\subsection{Deriving $b^*$ (Exam-Critical!)}
+
+\textbf{Step 1:} Fix $w$. Let $\epsilon_i = wx_i - y_i$.
+$$R(b) = \frac{1}{n}\sum_i (\epsilon_i + b)^2 = \frac{1}{n}\sum_i \epsilon_i^2 + 2b\bar{\epsilon} + b^2$$
+
+\textbf{Step 2:} This is a quadratic $b^2 + 2b\bar{\epsilon} + \overline{\epsilon^2}$, minimized at $b = -\bar{\epsilon}$.
+
+$$\boxed{b^* = \bar{y} - w\bar{x}}$$
+
+\textbf{Key geometric fact:} The best-fit line ALWAYS passes through the centroid $(\bar{x}, \bar{y})$, regardless of $w$.
+
+\subsection{Deriving $w^*$ (Exam-Critical!)}
+
+\textbf{Step 1:} Substitute $b^*$. Prediction becomes $\hat{y}_i = w(x_i - \bar{x}) + \bar{y} = w\tilde{x}_i + \bar{y}$.
+
+\textbf{Step 2:} Error becomes $w\tilde{x}_i - \tilde{y}_i$ (centered variables).
+
+\textbf{Step 3:}
+$$R(w) = w^2 \underbrace{\frac{1}{n}\sum_i \tilde{x}_i^2}_{\text{Var}(x)} - 2w\underbrace{\frac{1}{n}\sum_i \tilde{x}_i\tilde{y}_i}_{\text{Cov}(x,y)} + \underbrace{\frac{1}{n}\sum_i \tilde{y}_i^2}_{\text{Var}(y)}$$
+
+\textbf{Step 4:} Quadratic $Aw^2 - Bw + C$ with $A = \text{Var}(x)$, $B = 2\text{Cov}(x,y)$. Minimized at $w = B/(2A)$:
+
+$$\boxed{w^* = \frac{\text{Cov}(x, y)}{\text{Var}(x)}}$$
+
+\subsection{OLS Properties (Exam-Critical!)}
+
+\begin{enumerate}
+    \item \textbf{Line passes through centroid:} $b^* = \bar{y} - w^*\bar{x}$ $\Rightarrow$ $\hat{y}(\bar{x}) = \bar{y}$ \checkmark
+    \item \textbf{Residuals sum to zero:} $\sum_i e_i = 0$
+    \item \textbf{Residuals uncorrelated with $x$:} $\sum_i x_i e_i = 0$
+    \item \textbf{Residuals uncorrelated with predictions:} $\sum_i \hat{y}_i e_i = 0$ (follows from 2 \& 3)
+    \item \textbf{Variance decomposition:} $\text{Var}(y) = \text{Var}(\hat{y}) + \text{Var}(e)$ (follows from 4)
+\end{enumerate}
+
+\subsection{$R^2$ (Coefficient of Determination)}
+
+$$R^2 = 1 - \frac{\text{SS}_{\text{res}}}{\text{SS}_{\text{tot}}} = 1 - \frac{\sum_i(y_i - \hat{y}_i)^2}{\sum_i(y_i - \bar{y})^2}$$
+
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+$R^2$ & \textbf{Interpretation} \\
+\hline
+1.0 & Perfect fit \\
+0.0 & No better than predicting $\bar{y}$ \\
+$< 0$ & Worse than predicting $\bar{y}$ (overfit model on test data) \\
+\hline
+\end{tabular}
+\end{center}
+
+Also: $R^2 = r^2$ (square of correlation coefficient).
+
+\subsection{Ridge Regression}
+
+\textbf{Objective:}
+$$R_{\text{ridge}}(w, b) = \frac{1}{n}\sum_i (wx_i + b - y_i)^2 + \lambda w^2$$
+
+\textbf{Solution:}
+$$w^*_{\text{ridge}} = \frac{\text{Cov}(x,y)}{\text{Var}(x) + \lambda}, \qquad b^*_{\text{ridge}} = \bar{y} - w^*_{\text{ridge}}\bar{x}$$
+
+\textbf{Shrinkage factor:}
+$$w^*_{\text{ridge}} = w^*_{\text{OLS}} \cdot \frac{\text{Var}(x)}{\text{Var}(x) + \lambda}$$
+
+\begin{itemize}
+    \item $\lambda = 0$: ridge $=$ OLS (no shrinkage)
+    \item $\lambda \to \infty$: $w \to 0$ (predict $\bar{y}$, extreme underfitting)
+    \item $\lambda$ moderate: sweet spot (balance fit and stability)
+\end{itemize}
+
+\textbf{Note:} The intercept $b$ is NOT regularized. Only the slope $w$ is penalized.
+
+\subsection{Correlation Connection}
+
+$$w^* = r \cdot \frac{\sigma_y}{\sigma_x}$$
+
+where $r = \text{Cov}(x,y)/(\sigma_x \sigma_y)$ is the correlation coefficient. If $r = 0$ (no correlation), $w^* = 0$ and the model predicts $\bar{y}$.
+
+\subsection{Worked Example: Ice Cream Sales}
+
+Data: $(15, 120), (20, 180), (25, 200), (30, 280), (35, 320)$
+
+\begin{itemize}
+    \item $\bar{x} = 25$, $\bar{y} = 220$
+    \item $\text{Var}(x) = 50$, $\text{Cov}(x,y) = 500$
+    \item $w^* = 500/50 = 10$, $b^* = 220 - 250 = -30$
+    \item Model: $\hat{y} = 10x - 30$
+    \item $R^2 = 1 - 600/25600 = 0.977$
+    \item Ridge with $\lambda = 25$: $w^*_{\text{ridge}} = 500/75 \approx 6.67$
+\end{itemize}
+
+\begin{tcolorbox}[colback=blue!5,colframe=blue!50,title=Mini-Exercise (3 min)]
+Given data $(1,3), (2,5), (3,7), (4,9)$, compute $w^*$, $b^*$, and the model.
+\end{tcolorbox}
+\noindent\textbf{Answer:} $\bar{x}=2.5$, $\bar{y}=6$, $\text{Var}(x)=1.25$, $\text{Cov}(x,y)=2.5$. $w^* = 2.5/1.25 = 2$, $b^* = 6 - 2(2.5) = 1$. Model: $\hat{y} = 2x + 1$. (Perfect fit --- data is exactly $y = 2x+1$.)
+
+% ============================================================
+\section{Block 3: Week 3 --- Overfitting \& Regularization (20 min)}
+% ============================================================
+
+\subsection{Polynomial Regression}
+
+$$\hat{y} = w_d x^d + \ldots + w_1 x + w_0$$
+
+\textbf{Key insight:} Linear in \textbf{parameters} (the $w_j$), nonlinear in \textbf{features} ($x, x^2, \ldots, x^d$). The OLS machinery still applies.
+
+\subsection{The Degree-vs-Data Tradeoff}
+
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Condition} & \textbf{What happens} \\
+\hline
+$d+1 \ll n$ & Can't fit all patterns (underfitting risk) \\
+$d+1 \approx n$ & Fits well (if pattern is polynomial) \\
+$d+1 = n$ & Passes through every point (zero training error) \\
+$d+1 > n$ & Infinitely many perfect fits (underdetermined) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{The Fundamental Observation (Exam-Critical!)}
+
+\begin{tcolorbox}[colback=yellow!10,colframe=orange!50]
+\textbf{Training error is monotonically non-increasing with complexity.} A higher-degree polynomial can always represent everything a lower-degree one can (set extra coefficients to zero) plus more.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!10,colframe=orange!50]
+\textbf{Test error is NOT monotonic.} It first decreases (capturing real pattern), then increases (fitting noise). This U-shape is the \textbf{most important figure in ML}.
+\end{tcolorbox}
+
+\subsection{Diagnostic Table (Exam-Critical!)}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Symptom} & \textbf{Diagnosis} & \textbf{Prescription} \\
+\hline
+Both high, small gap & Underfitting & Increase complexity \\
+Low train, high test, large gap & Overfitting & Decrease complexity or add regularization \\
+Both low, small gap & Good fit & Done! \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{The Generalization Gap}
+
+$$\text{Generalization gap} = R_{\text{test}} - R_{\text{train}}$$
+
+\begin{itemize}
+    \item Small gap + both high $\to$ underfitting
+    \item Large gap + low train $\to$ overfitting
+    \item Small gap + both low $\to$ good fit
+\end{itemize}
+
+\subsection{Bias-Variance Intuition (Without Probability)}
+
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+ & $\lambda=0$ (OLS) & $\lambda$ moderate & $\lambda \to \infty$ \\
+\hline
+Bias & Low & Moderate & High \\
+Variance & High & Moderate & Low \\
+Training error & Lowest & Slightly higher & Highest \\
+Test error & Can be high & \textbf{Lowest} & High \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Key intuition:} OLS has low bias (fits data hard) but high variance (fits noise, unstable). Ridge trades a small increase in bias for a large decrease in variance. At the sweet spot, total error is minimized.
+
+\subsection{L1 vs.\ L2 Geometry (Exam-Critical!)}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Property} & \textbf{Ridge (L2)} & \textbf{Lasso (L1)} \\
+\hline
+Penalty & $\lambda \sum w_j^2$ & $\lambda \sum |w_j|$ \\
+Constraint shape & Ball (circle/sphere) & Diamond (cross-polytope) \\
+Solution & Closed-form & Iterative (no closed form) \\
+Sparsity & No (weights small but nonzero) & \textbf{Yes} (some weights exactly 0) \\
+Feature selection & No & \textbf{Yes} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Why lasso produces sparsity:} The L1 diamond has corners on the axes. The optimization solution often lands on a corner, where some $w_j = 0$. The L2 circle has no corners, so the solution is typically not on an axis --- all weights remain nonzero.
+
+\textbf{Why lasso has no closed form:} $|w|$ is not differentiable at $w = 0$ (left derivative $-1$, right derivative $+1$). Can't set gradient to zero. This nondifferentiability is EXACTLY why sparsity occurs.
+
+\subsection{Elastic Net}
+
+$$R_{\text{elastic}} = \text{MSE} + \lambda_1 \sum |w_j| + \lambda_2 \sum w_j^2$$
+
+Combines L1 (sparsity) and L2 (stability with correlated features). Constraint shape is a ``rounded diamond.''
+
+\subsection{The Complexity Dial (Exam-Critical!)}
+
+Every ML model has a complexity knob --- they're all the same knob:
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Model} & \textbf{Knob} & \textbf{Low complexity} & \textbf{High complexity} \\
+\hline
+Polynomial & Degree $d$ & $d=1$ (line) & $d=n-1$ (through all) \\
+Ridge & $\lambda$ & $\lambda \to \infty$ & $\lambda = 0$ (OLS) \\
+Lasso & $\lambda$ & $\lambda \to \infty$ & $\lambda = 0$ \\
+$k$-NN & $k$ & $k=n$ (predict $\bar{y}$) & $k=1$ (memorize) \\
+Decision trees & Depth & Depth 1 & Depth $\infty$ \\
+\hline
+\end{tabular}
+\end{center}
+
+The U-shaped test error curve is \textbf{universal} --- it applies to every model and every knob.
+
+\subsection{Residual Analysis}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Residual pattern} & \textbf{Diagnosis} & \textbf{Fix} \\
+\hline
+Random scatter & Good fit & Done \\
+Clear curve (U-shape) & Underfitting & Add polynomial features \\
+Increasing spread & Heteroscedasticity & Weighted regression (advanced) \\
+Outliers & Data errors or extremes & Investigate; Huber loss \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{tcolorbox}[colback=blue!5,colframe=blue!50,title=Mini-Exercise (3 min)]
+You fit three models and get: (A) train MSE = 15, test MSE = 16; (B) train MSE = 2, test MSE = 3; (C) train MSE = 0.01, test MSE = 28. Diagnose each.
+\end{tcolorbox}
+\noindent\textbf{Answer:} A = underfitting (both high, small gap). B = good fit (both low, small gap). C = overfitting (train $\approx 0$, test high, large gap).
+
+% ============================================================
+\section{Block 4: Week 4 --- Model Evaluation \& Validation (30 min)}
+% ============================================================
+
+\subsection{The Train/Validation/Test Split}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Set} & \textbf{Purpose} & \textbf{How often} \\
+\hline
+Training & Fit parameters ($w, b$) & Many times \\
+Validation & Tune hyperparameters ($\lambda, d$) & Several times \\
+Test & Final honest evaluation & \textbf{Exactly once} \\
+\hline
+\end{tabular}
+\end{center}
+
+Typical split: 60/20/20 or 70/15/15.
+
+\subsection{The Golden Rule (Exam-Critical!)}
+
+\begin{tcolorbox}[colback=red!5,colframe=red!50]
+\textbf{Never touch the test data during model development.}
+\end{tcolorbox}
+
+If you use the test set to pick models, it becomes a second validation set --- your estimate is optimistically biased.
+
+\subsection{Why Three Sets?}
+
+\begin{itemize}
+    \item \textbf{Training:} Model has seen this data $\to$ training error is optimistic
+    \item \textbf{Validation:} Used for model selection $\to$ validation error is somewhat biased (you chose the winner)
+    \item \textbf{Test:} Never seen in any form $\to$ honest estimate
+\end{itemize}
+
+\subsection{Data Leakage}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Leak type} & \textbf{Example} & \textbf{Fix} \\
+\hline
+Normalizing before splitting & Mean/std on ALL data & Split first, normalize with train stats only \\
+Duplicates & Same patient in train and test & Split by patient, not by record \\
+Temporal leakage & Train on future, test on past & Train on past, test on future \\
+Feature selection before splitting & Pick features on ALL data & Select features on train only \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Prevention:} Always split FIRST. Do ALL preprocessing using ONLY training data. Apply same transformations to validation/test.
+
+\subsection{$k$-Fold Cross-Validation}
+
+\textbf{Procedure:}
+\begin{enumerate}
+    \item Split data into $k$ equal folds
+    \item For each fold $i$: train on $k-1$ folds, validate on fold $i$
+    \item Average the $k$ validation errors
+\end{enumerate}
+
+\textbf{Fold sizes (example: $n=1000$, $k=5$):}
+\begin{itemize}
+    \item Each validation fold: $1000/5 = 200$ examples
+    \item Each training fold: $1000 - 200 = 800$ examples
+    \item Total model fits: $5$ per candidate model
+\end{itemize}
+
+\textbf{Advantages:}
+\begin{itemize}
+    \item Every point used for validation exactly once
+    \item Less noisy than a single split
+    \item Gives standard deviation (stability measure)
+\end{itemize}
+
+\subsection{LOOCV (Leave-One-Out)}
+
+$k = n$: each fold is one data point. Train on $n-1$, test on 1.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Property} & \textbf{LOOCV} & \textbf{5-fold CV} \\
+\hline
+Folds & $n$ & 5 \\
+Training per fold & $n-1$ & $4n/5$ \\
+Cost & $n$ fits & 5 fits \\
+Bias & Low & Slightly higher \\
+Variance & Higher (folds correlated) & Lower \\
+Best for & Small $n$ ($<50$) & Most cases \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Why LOOCV has higher variance:} Training sets are nearly identical (differ by 1 point), so validation errors are highly correlated. Averaging correlated values doesn't reduce variance much.
+
+\subsection{Model Selection Procedure}
+
+\begin{enumerate}
+    \item Choose candidate models (e.g., degrees 1--10)
+    \item For each, run $k$-fold CV, compute average validation error
+    \item Pick model with lowest average CV error
+    \item (Optional) Retrain on all data with chosen model
+    \item Evaluate ONCE on test set
+\end{enumerate}
+
+\subsection{Overfitting to the Validation Set}
+
+If you try 500 models and pick the best on validation, the winner is partly lucky. This is the \textbf{multiple comparisons problem}. The test set (used once) mitigates this.
+
+\subsection{Confusion Matrix (Exam-Critical!)}
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+ & \textbf{Predicted Positive} & \textbf{Predicted Negative} \\
+\hline
+\textbf{Actual Positive} & TP (True Positive) & FN (False Negative) \\
+\textbf{Actual Negative} & FP (False Positive) & TN (True Negative) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Classification Metrics (Exam-Critical!)}
+
+\textbf{Accuracy:}
+$$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$$
+
+\textbf{Precision} (quality of positive predictions):
+$$\text{Precision} = \frac{TP}{TP + FP}$$
+
+\textbf{Recall} (coverage of actual positives):
+$$\text{Recall} = \frac{TP}{TP + FN}$$
+
+\textbf{F1-Score} (harmonic mean of precision and recall):
+$$F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}$$
+
+\textbf{Why harmonic mean?} If precision $= 0.01$ and recall $= 1.0$, arithmetic mean $= 0.505$ (looks OK) but harmonic mean $\approx 0.02$ (correctly terrible). Harmonic mean is high only when BOTH are high.
+
+\subsection{Why Accuracy Fails with Imbalance}
+
+\textbf{Example:} Disease affects 0.1\% of population. Model that predicts ``healthy'' for everyone gets 99.9\% accuracy but catches 0\% of cases. Accuracy is useless here.
+
+\textbf{Baseline comparison:} Always compare against the trivial baseline (predict majority class).
+
+\subsection{Worked Example: Spam Filter}
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+ & \textbf{Predicted Spam} & \textbf{Predicted Not Spam} \\
+\hline
+\textbf{Actual Spam} & 80 & 20 \\
+\textbf{Actual Not Spam} & 10 & 890 \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+    \item Total $= 1000$
+    \item Accuracy $= (80 + 890)/1000 = 97\%$
+    \item Precision $= 80/(80+10) = 88.9\%$
+    \item Recall $= 80/(80+20) = 80\%$
+    \item F1 $= 2(0.889 \times 0.80)/(0.889 + 0.80) = 84.2\%$
+\end{itemize}
+
+\textbf{Baseline} (predict ``not spam'' for all): Accuracy $= 900/1000 = 90\%$, Recall $= 0\%$, F1 $= 0$.
+
+\subsection{Precision-Recall Tradeoff}
+
+\begin{center}
+\begin{tabular}{|c|c|c|l|}
+\hline
+\textbf{Threshold} & \textbf{Precision} & \textbf{Recall} & \textbf{Use case} \\
+\hline
+High (0.9) & High & Low & Spam filter (don't flag good emails) \\
+Low (0.1) & Low & High & Cancer screening (don't miss cases) \\
+Balanced (0.5) & Moderate & Moderate & General purpose \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{ROC Curve and AUC}
+
+\textbf{ROC:} Plot TPR vs.\ FPR as threshold sweeps from 1.0 to 0.0.
+
+$$TPR = \text{Recall} = \frac{TP}{TP + FN}, \qquad FPR = \frac{FP}{FP + TN}$$
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Curve shape} & \textbf{Meaning} \\
+\hline
+Hugs top-left & Excellent classifier \\
+Diagonal & Random guessing (AUC $= 0.5$) \\
+Below diagonal & Worse than random (flip predictions!) \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{AUC interpretation (Exam-Critical!):}
+
+\begin{tcolorbox}[colback=yellow!10,colframe=orange!50]
+AUC $=$ probability that the classifier ranks a random positive example higher than a random negative example.
+\end{tcolorbox}
+
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{AUC} & \textbf{Interpretation} \\
+\hline
+1.0 & Perfect \\
+0.9 & Excellent \\
+0.7 & Good \\
+0.5 & Random \\
+$< 0.5$ & Worse than random \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{PR Curve vs.\ ROC}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Situation} & \textbf{Use} \\
+\hline
+Balanced classes & ROC \\
+Highly imbalanced & PR curve (ROC looks misleadingly good) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Regression Metrics}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Metric} & \textbf{Formula} & \textbf{When to use} \\
+\hline
+MSE & $\frac{1}{n}\sum(\hat{y}_i - y_i)^2$ & Large errors are especially bad \\
+RMSE & $\sqrt{\text{MSE}}$ & Same units as $y$ (interpretable) \\
+MAE & $\frac{1}{n}\sum|\hat{y}_i - y_i|$ & Outliers present (less sensitive) \\
+$R^2$ & $1 - \text{SS}_{\text{res}}/\text{SS}_{\text{tot}}$ & Dimensionless comparison \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Learning Curves}
+
+Plot training error and validation error vs.\ \textbf{training set size} (not complexity).
+
+\begin{center}
+\begin{tabular}{|l|c|c|c|l|l|}
+\hline
+\textbf{Pattern} & \textbf{Train} & \textbf{Val} & \textbf{Gap} & \textbf{Diagnosis} & \textbf{Fix} \\
+\hline
+Both high, small gap & High & High & Small & Underfitting & More complex model \\
+Low train, high val & Low & High & Large & Overfitting & More data or regularize \\
+Both low, small gap & Low & Low & Small & Good fit & Done \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Key insight:} If curves haven't converged (large gap), more data will help. If converged but both high, need more complexity --- more data won't help.
+
+\subsection{Complexity Curve vs.\ Learning Curve}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+ & \textbf{Complexity Curve (W3)} & \textbf{Learning Curve (W4)} \\
+\hline
+X-axis & Model complexity (degree, $1/\lambda$) & Training set size \\
+Fixed & Data size & Model \\
+Reveals & Sweet spot in complexity & Whether more data helps \\
+\hline
+\end{tabular}
+\end{center}
+
+They are complementary: complexity curve tells you \textbf{what model to use}, learning curve tells you \textbf{whether to collect more data}.
+
+\begin{tcolorbox}[colback=blue!5,colframe=blue!50,title=Mini-Exercise (3 min)]
+A model has training MSE $= 1.2$ and validation MSE $= 5.8$. What is happening? Name three fixes.
+\end{tcolorbox}
+\noindent\textbf{Answer:} Overfitting (low train, high val, large gap). Fixes: (1)~add regularization (increase $\lambda$), (2)~reduce model complexity (lower degree), (3)~collect more training data.
+
+% ============================================================
+\section{Block 5: Exam Strategy \& Common Mistakes (15 min)}
+% ============================================================
+
+\subsection{Top 10 Common Mistakes}
+
+\begin{enumerate}
+    \item \textbf{Swapping precision and recall.} Precision $= TP/(TP+FP)$ [column]. Recall $= TP/(TP+FN)$ [row].
+    \item \textbf{Using arithmetic mean instead of harmonic mean for F1.} $F_1 = 2PR/(P+R)$, not $(P+R)/2$.
+    \item \textbf{Saying ``test $>$ train means overfitting.''} Overfitting requires a LARGE gap, not just test slightly above train.
+    \item \textbf{Forgetting to center before computing variance/covariance.} $\text{Var}(x) = \frac{1}{n}\sum(x_i - \bar{x})^2$, NOT $\frac{1}{n}\sum x_i^2$.
+    \item \textbf{Normalizing before splitting.} Always split FIRST, then normalize with train stats.
+    \item \textbf{Confusing validation and test sets.} Validation $=$ tune hyperparameters (multiple uses). Test $=$ final eval (once).
+    \item \textbf{Saying ``choose $\lambda$ with lowest training error.''} Training error always decreases as $\lambda \to 0$. Use CV error.
+    \item \textbf{Forgetting why lasso has no closed form.} $|w|$ is not differentiable at $w=0$. This IS why sparsity happens.
+    \item \textbf{Using MSE for imbalanced classification.} Use precision, recall, F1, or AUC instead.
+    \item \textbf{Saying ``more data always fixes overfitting.''} More data helps if the gap is large. If converged but both high, you need more complexity.
+\end{enumerate}
+
+\subsection{Derivation Checklist}
+
+You must be able to derive on the exam:
+\begin{itemize}
+    \item $b^* = \bar{y} - w\bar{x}$ (complete the square in $b$)
+    \item $w^* = \text{Cov}(x,y)/\text{Var}(x)$ (substitute $b^*$, complete the square in $w$)
+    \item Ridge shrinkage factor: $w^*_{\text{ridge}} = w^*_{\text{OLS}} \cdot \text{Var}(x)/(\text{Var}(x) + \lambda)$
+    \item Training error is monotonically non-increasing in degree (nested hypothesis space argument)
+    \item $\text{Var}(y) = \text{Var}(\hat{y}) + \text{Var}(e)$ (using $\text{Cov}(\hat{y}, e) = 0$)
+\end{itemize}
+
+\subsection{Memorization Checklist}
+
+\begin{itemize}
+    \item The diagnostic table (underfitting/overfitting/good fit from train/test errors)
+    \item The bias-variance table (for $\lambda = 0$, moderate, $\infty$)
+    \item The complexity dial table (degree, $\lambda$, $k$, depth)
+    \item Formulas: accuracy, precision, recall, F1, TPR, FPR
+    \item AUC $= P(\text{score}(+) > \text{score}(-))$
+    \item L1 $=$ diamond (sparse), L2 $=$ circle (not sparse)
+    \item Golden Rule: never touch test data during development
+    \item $k$-fold: each point used for validation once, training $k-1$ times
+\end{itemize}
+
+\subsection{Exam Time Management}
+
+\begin{itemize}
+    \item \textbf{Long questions (20 min each):} Spend 3--4 min per part. If stuck on a derivation, write what you know and move on --- partial credit matters.
+    \item \textbf{Short questions (6 min each):} Spend 1--2 min per sub-part. These are faster --- don't overthink.
+    \item \textbf{Leave 5 min at the end} to review your work.
+\end{itemize}
+
+\subsection{Practice Questions}
+
+\textbf{Practice 1:} Given data $(1, 2), (3, 5), (5, 8), (7, 11)$, compute $w^*$, $b^*$, and the model. Then compute MSE and $R^2$.
+
+\noindent\textbf{Answer:} $\bar{x}=4, \bar{y}=6.5, \text{Var}(x)=5, \text{Cov}(x,y)=7.5$. $w^*=1.5, b^*=0.5$. Model: $\hat{y}=1.5x+0.5$. Predictions: 2, 5, 8, 11. MSE$=0$, $R^2=1$ (perfect fit).
+
+\medskip
+
+\textbf{Practice 2:} A classifier has TP$=45$, FP$=15$, FN$=5$, TN$=35$. Compute all metrics. Is this better for cancer screening or spam filtering?
+
+\noindent\textbf{Answer:} Accuracy $= 80/100 = 80\%$. Precision $= 45/60 = 75\%$. Recall $= 45/50 = 90\%$. F1 $= 2(0.75 \times 0.90)/(0.75+0.90) = 81.8\%$. High recall $\to$ good for cancer screening.
+
+\medskip
+
+\textbf{Practice 3:} You have 200 examples and use 10-fold CV. How many in each train/val fold? How many total fits?
+
+\noindent\textbf{Answer:} Each fold: 20 validation, 180 training. 10 total fits per candidate model.
+
+\medskip
+
+\textbf{Practice 4:} Explain why training error is monotonically non-increasing with polynomial degree, but test error is not.
+
+\noindent\textbf{Answer:} Nested hypothesis spaces: $\mathcal{H}_{d_1} \subset \mathcal{H}_{d_2}$, so the optimizer can always do at least as well. But higher degree can fit noise, which hurts generalization.
+
+\medskip
+
+\textbf{Practice 5:} Sketch the L1 and L2 constraint regions in 2D. Explain why lasso produces sparsity.
+
+\noindent\textbf{Answer:} L2 $=$ circle (no corners, solution not on axis). L1 $=$ diamond (corners on axes, solution lands on corner $\to$ some $w_j = 0$).
+
+% ============================================================
+\section{Summary: The Complete Picture}
+% ============================================================
+
+\begin{verbatim}
+Week 1: Framework
+  |-- Learning = improving performance with experience
+  |-- ERM: minimize average training loss
+  |-- True risk vs. empirical risk -> generalization gap
+  +-- Overfitting (too complex) vs. underfitting (too simple)
+
+Week 2: Linear Regression
+  |-- OLS: w* = Cov/Var, b* = y_bar - w*x_bar
+  |-- Line through centroid, residuals sum to zero
+  |-- R^2 = fraction of variance explained
+  +-- Ridge: shrink slope toward zero with lambda
+
+Week 3: Overfitting Deep
+  |-- Polynomial regression (linear in params, nonlinear in features)
+  |-- Training error decreases with complexity, test error is U-shaped
+  |-- L1 (lasso) = diamond -> sparsity; L2 (ridge) = circle -> shrinkage
+  |-- Complexity dial: degree, lambda, k, depth -- all the same knob
+  +-- Bias-variance: regularization increases bias, decreases variance
+
+Week 4: Evaluation
+  |-- Train/val/test: fit params / tune hyperparams / final eval (once)
+  |-- k-fold CV: average over k folds, less noisy than single split
+  |-- Confusion matrix -> accuracy, precision, recall, F1
+  |-- ROC/AUC: ranking ability = P(score(+) > score(-))
+  |-- Learning curves: error vs. data size (complement to complexity curve)
+  +-- Golden Rule: never touch test data during development
+\end{verbatim}
+
+\bigskip
+
+\begin{tcolorbox}[colback=green!5,colframe=green!50,title=The One Sentence That Connects Everything]
+\emph{We minimize training loss (ERM), but we care about test loss (generalization); the gap between them depends on model complexity (the complexity dial), which we control with regularization (ridge/lasso) and measure properly with cross-validation and the right metrics.}
+\end{tcolorbox}
+
+\bigskip
+
+\section*{Post-Session Checklist for Instructor}
+
+\begin{itemize}
+    \item[$\square$] Distribute the exam review sheet (this document)
+    \item[$\square$] Remind students of exam time and location
+    \item[$\square$] Review quiz results from Weeks 1--4 --- identify common weak spots
+    \item[$\square$] Prepare targeted office hours for students struggling with derivations
+    \item[$\square$] Ensure all students can compute confusion matrix metrics from scratch
+    \item[$\square$] Verify students understand the L1/L2 geometry (draw it!)
+    \item[$\square$] Check that students know the Golden Rule and data leakage examples
+\end{itemize}
+
+\bigskip
+
+\begin{center}
+\emph{Good luck on the exam. Remember: every ML problem is hypothesis space + loss function + optimizer. Choose all three carefully. Minimize training loss, but care about test loss. The gap is generalization.}
+\end{center}
+
+\end{document}
